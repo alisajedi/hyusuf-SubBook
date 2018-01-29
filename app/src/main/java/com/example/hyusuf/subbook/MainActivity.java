@@ -1,5 +1,6 @@
 package com.example.hyusuf.subbook;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -20,10 +21,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
     private static final String TAG="Main Activity";
     private static final String file="sub.txt";
     private RecyclerView recyclerView;
@@ -42,8 +44,9 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Subscriptions> saved_Subs(ArrayList<Subscriptions> list) {
         Subscriptions sub=null;
         ObjectInputStream ois=null;
+        File sub_File= new File(getFilesDir(),""+File.separator+file);
         try{
-            FileInputStream fis= new FileInputStream(new File(new File(getFilesDir(),"")+File.separator+file));
+            FileInputStream fis = new FileInputStream(sub_File);
             while(true){
                 try{
                     ois = new ObjectInputStream(fis);
@@ -54,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             ois.close();
-            Log.d(TAG, "get_savedsubs: "+list.get(1).getSubName());
+            Log.d(TAG, "get_savedsubs: "+list);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -88,11 +91,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(getScreenIntent);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
 
-    }
 
 
 }

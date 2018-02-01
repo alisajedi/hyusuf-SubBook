@@ -15,13 +15,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -35,54 +41,28 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        createView();
 
     }
 
 
-
-    private ArrayList<Subscriptions> saved_Subs(ArrayList<Subscriptions> list) {
-        Subscriptions sub=null;
-        ObjectInputStream ois=null;
-        File sub_File= new File(getFilesDir(),""+File.separator+file);
-        try{
-            FileInputStream fis = new FileInputStream(sub_File);
-            while(true){
-                try{
-                    ois = new ObjectInputStream(fis);
-                    sub=(Subscriptions) ois.readObject();
-                    list.add(sub);
-                }catch(EOFException e){
-                    break;
-                }
-            }
-            ois.close();
-            Log.d(TAG, "get_savedsubs: "+list);
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
     private void createView(){
-
+        Log.d(TAG, "createView: in CreateView");
         recyclerView=(RecyclerView)findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         ArrayList<Subscriptions> subsList= new ArrayList<Subscriptions>();
-        subsList= saved_Subs(subsList);
+        InternalStorage storage= new InternalStorage(getApplicationContext(),file);
+        subsList=storage.load_Subs();
         adapter= new myAdapter(subsList,this);
         recyclerView.setAdapter(adapter);
+        recyclerView.invalidate();
 
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d(TAG, "onResume: on resume");
         createView();
     }
 

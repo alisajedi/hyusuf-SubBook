@@ -1,6 +1,7 @@
 package com.example.hyusuf.subbook;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,14 +10,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+
+import java.util.ArrayList;
+
 import static android.content.ContentValues.TAG;
 
 
@@ -29,9 +25,11 @@ public class CreateSubActivity extends Activity {
     private Button buttonSubmit;
     private Button buttonReset;
     private Button buttonCancel;
-    private Boolean edit=false;
+    private InternalStorage storage;
+    private Boolean edit = false;
     private Subscriptions subscription;
-    private static String file="sub.txt";
+    private static String file = "sub.txt";
+    private ArrayList<Subscriptions> subList=new ArrayList<Subscriptions>();
 
 
     @Override
@@ -39,30 +37,30 @@ public class CreateSubActivity extends Activity {
         Log.d(TAG, "onCreate: In");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sublayout);
-        editName= (EditText) findViewById(R.id.editTextName);
-        editDate=(EditText)findViewById(R.id.editTextDate);
-        editCharge=(EditText)findViewById(R.id.editTextCharge);
-        editComment=(EditText)findViewById(R.id.editTextComment);
-        buttonSubmit=(Button)findViewById(R.id.buttonSubmit);
-        buttonCancel=(Button)findViewById(R.id.buttonCancel);
-        buttonReset=(Button)findViewById(R.id.buttonReset);
+        editName = (EditText) findViewById(R.id.editTextName);
+        editDate = (EditText) findViewById(R.id.editTextDate);
+        editCharge = (EditText) findViewById(R.id.editTextCharge);
+        editComment = (EditText) findViewById(R.id.editTextComment);
+        buttonSubmit = (Button) findViewById(R.id.buttonSubmit);
+        buttonCancel = (Button) findViewById(R.id.buttonCancel);
+        buttonReset = (Button) findViewById(R.id.buttonReset);
+        storage= new InternalStorage(getApplicationContext(),file);
 
-        try{
-            Intent intent=getIntent();
-            subscription=(Subscriptions)intent.getSerializableExtra("subscription");
-            Log.d("EDIT", "onCreate: "+subscription.getSubName());
-            if(subscription!= null) {
+
+        try {
+            Intent intent = getIntent();
+            subscription = (Subscriptions) intent.getSerializableExtra("subscription");
+            Log.d("EDIT", "onCreate: " + subscription.getSubName());
+            if (subscription != null) {
                 editName.setText(subscription.getSubName());
                 editCharge.setText(subscription.getSubCharge());
                 editDate.setText(subscription.getSubDate());
                 editComment.setText(subscription.getSubComment());
-                edit=true;
+                edit = true;
             }
-        }catch(NullPointerException e){
+        } catch (NullPointerException e) {
             e.printStackTrace();
         }
-
-
 
 
         View.OnClickListener listener = new View.OnClickListener() {
@@ -71,21 +69,22 @@ public class CreateSubActivity extends Activity {
                 switch (view.getId()) {
 
                     case R.id.buttonSubmit:
-                        if(edit==true){
-                            Subscriptions editSub=new Subscriptions(editName.getText().toString(),
+                        if (edit == true) {
+                            Subscriptions editSub = new Subscriptions(editName.getText().toString(),
                                     editDate.getText().toString(), editCharge.getText().toString(),
                                     editComment.getText().toString());
-                            SubDeletion subDeletion= new SubDeletion(subscription,getApplicationContext(),editSub);
-                            subDeletion.deleteSub(true);
+                            storage.edit_Sub(subscription,editSub);
                             finish();
-                        }
-                        else{
-                        Subscriptions subscription = new Subscriptions(editName.getText().toString(),
-                                editDate.getText().toString(), editCharge.getText().toString(),
-                                editComment.getText().toString());
-                        save_Sub(subscription);
-                        finish();
-                        break;
+                        } else {
+                            Subscriptions subscription = new Subscriptions(editName.getText().toString(),
+                                    editDate.getText().toString(), editCharge.getText().toString(),
+                                    editComment.getText().toString());
+
+                            subList=storage.load_Subs();
+                            subList.add(subscription);
+                            storage.save_Sub(subList);
+                            finish();
+                            break;
                         }
 
                     case R.id.buttonCancel:
@@ -111,27 +110,7 @@ public class CreateSubActivity extends Activity {
         buttonReset.setOnClickListener(listener);
 
 
-
     }
-
-
-    private void save_Sub(Subscriptions sub) {
-        File sub_file=new File(getFilesDir(),""+File.separator+file);
-        try{
-            FileOutputStream fileOutputStream=new FileOutputStream(sub_file,true);
-            ObjectOutputStream objectOutputStream= new ObjectOutputStream(fileOutputStream);
-            objectOutputStream.writeObject(sub);
-            objectOutputStream.flush();
-            objectOutputStream.close();
-            Toast.makeText(getApplicationContext(), "Sub saved",Toast.LENGTH_LONG).show();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
 
 
 

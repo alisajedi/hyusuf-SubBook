@@ -28,6 +28,7 @@ public class myAdapter extends RecyclerView.Adapter<myAdapter.ViewHolder> {
     private ArrayList<Subscriptions> subscriptionsList;
     private Context context;
     private Subscriptions subscription;
+    private static final String file="sub.txt";
 
     @Override
     public long getItemId(int position) {
@@ -83,11 +84,10 @@ public class myAdapter extends RecyclerView.Adapter<myAdapter.ViewHolder> {
                                 //handle menu2 click
                                 subscription= subscriptionsList.get(position);
                                 subscriptionsList.remove(position);
-
-                                Log.d("On delete", "onMenuItemClick: "+subscription.toString());
-                                SubDeletion subDeletion=new SubDeletion(subscription,context);
-                                subDeletion.deleteSub(false);
+                                InternalStorage internalStorage=new InternalStorage(context,file);
+                                internalStorage.delete_Sub(subscription);
                                 notifyDataSetChanged();
+                                Log.d("On delete", "onMenuItemClick: "+subscription.toString());
                                 Toast.makeText(context,"delete item clicked",Toast.LENGTH_LONG).show();
                                 break;
                         }

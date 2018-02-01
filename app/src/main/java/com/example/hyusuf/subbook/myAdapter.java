@@ -2,6 +2,7 @@ package com.example.hyusuf.subbook;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -74,7 +75,8 @@ public class myAdapter extends RecyclerView.Adapter<myAdapter.ViewHolder> {
                                 subscription= subscriptionsList.get(position);
                                 Intent myIntent = new Intent(context, CreateSubActivity.class);
                                 myIntent.putExtra("subscription",subscription ); //Optional parameters
-                                context.startActivity(context.RESULT_OK,myIntent);
+                                context.startActivity(myIntent);
+                                notifyDataSetChanged();
                                 Toast.makeText(context,"edit item Clicked",Toast.LENGTH_LONG).show();
                                 break;
                             case R.id.mnu_item_delete:
@@ -84,7 +86,7 @@ public class myAdapter extends RecyclerView.Adapter<myAdapter.ViewHolder> {
 
                                 Log.d("On delete", "onMenuItemClick: "+subscription.toString());
                                 SubDeletion subDeletion=new SubDeletion(subscription,context);
-                                subDeletion.deleteSub();
+                                subDeletion.deleteSub(false);
                                 notifyDataSetChanged();
                                 Toast.makeText(context,"delete item clicked",Toast.LENGTH_LONG).show();
                                 break;

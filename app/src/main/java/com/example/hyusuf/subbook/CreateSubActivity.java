@@ -9,10 +9,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.io.EOFException;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import static android.content.ContentValues.TAG;
 
@@ -26,6 +29,8 @@ public class CreateSubActivity extends Activity {
     private Button buttonSubmit;
     private Button buttonReset;
     private Button buttonCancel;
+    private Boolean edit=false;
+    private Subscriptions subscription;
     private static String file="sub.txt";
 
 
@@ -42,6 +47,23 @@ public class CreateSubActivity extends Activity {
         buttonCancel=(Button)findViewById(R.id.buttonCancel);
         buttonReset=(Button)findViewById(R.id.buttonReset);
 
+        try{
+            Intent intent=getIntent();
+            subscription=(Subscriptions)intent.getSerializableExtra("subscription");
+            Log.d("EDIT", "onCreate: "+subscription.getSubName());
+            if(subscription!= null) {
+                editName.setText(subscription.getSubName());
+                editCharge.setText(subscription.getSubCharge());
+                editDate.setText(subscription.getSubDate());
+                editComment.setText(subscription.getSubComment());
+                edit=true;
+            }
+        }catch(NullPointerException e){
+            e.printStackTrace();
+        }
+
+
+
 
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
@@ -49,12 +71,22 @@ public class CreateSubActivity extends Activity {
                 switch (view.getId()) {
 
                     case R.id.buttonSubmit:
+                        if(edit==true){
+                            Subscriptions editSub=new Subscriptions(editName.getText().toString(),
+                                    editDate.getText().toString(), editCharge.getText().toString(),
+                                    editComment.getText().toString());
+                            SubDeletion subDeletion= new SubDeletion(subscription,getApplicationContext(),editSub);
+                            subDeletion.deleteSub(true);
+                            finish();
+                        }
+                        else{
                         Subscriptions subscription = new Subscriptions(editName.getText().toString(),
                                 editDate.getText().toString(), editCharge.getText().toString(),
                                 editComment.getText().toString());
                         save_Sub(subscription);
                         finish();
                         break;
+                        }
 
                     case R.id.buttonCancel:
                         finish();
@@ -98,19 +130,9 @@ public class CreateSubActivity extends Activity {
             e.printStackTrace();
         }
     }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // Check which request we're responding to
-        if (requestCode == PICK_CONTACT_REQUES) {
-            // Make sure the request was successful
-            if (resultCode == RESULT_OK) {
-                // The user picked a contact.
-                // The Intent's data Uri identifies which contact was selected.
 
-                // Do something with the contact here (bigger example below)
-            }
-        }
-    }
+
+
 
 
 }

@@ -19,6 +19,7 @@ import static android.content.ContentValues.TAG;
 
 public class SubDeletion {
     private Subscriptions subscription;
+    private Subscriptions editsub;
     private static final String tempfile="temp.txt";
     private static final String file="sub.txt";
     private Context context;
@@ -27,7 +28,12 @@ public class SubDeletion {
         this.subscription=sub;
         this.context=con;
     }
-    public void deleteSub() {
+    public SubDeletion(Subscriptions oldsub, Context con, Subscriptions editsub){
+        this.subscription=oldsub;
+        this.context=con;
+        this.editsub=editsub;
+    }
+    public void deleteSub(boolean edit) {
         File contentFile=new File(context.getApplicationContext().getFilesDir()+"/"+file);
         File tempFile=new File(context.getApplicationContext().getFilesDir()+"/"+tempfile);
         ObjectInputStream ois = null;
@@ -42,8 +48,16 @@ public class SubDeletion {
                     sub = (Subscriptions) ois.readObject();
                     Log.d(TAG, "deleteSub: "+sub.toString());
                     if (this.equalTo(sub)) {
-                        Log.d(TAG, "deleteSub: "+"else block execute");
-                        continue;
+                        if (edit==true){
+                            Log.d(TAG, "deleteSub: edit tag");
+                            objectOutputStream.writeObject(editsub);
+                            objectOutputStream.flush();
+                        }
+                        else{
+                            Log.d(TAG, "deleteSub: continue");
+                            continue;
+
+                        }
                     }
                     else{
                         Log.d(TAG, "deleteSub: "+"not equal if block");
@@ -65,6 +79,8 @@ public class SubDeletion {
                 boolean successful = tempFile.renameTo(contentFile);
                 Log.d(TAG, "subDeletion: out " + successful);
             }
+
+            Log.d(TAG, "deleteSub: ");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {

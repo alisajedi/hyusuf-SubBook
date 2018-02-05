@@ -4,6 +4,9 @@ import java.io.Serializable;
 
 /**
  * Created by hyusuf on 2018-01-14.
+ *
+ * This class deals with making a Subscription.
+ *
  */
 
 public class Subscriptions implements Serializable {
@@ -12,6 +15,14 @@ public class Subscriptions implements Serializable {
     private String subCharge;
     private String subComment;
 
+    /**
+     * This function makes an instance of a subscription given a Name, Date,Charge,and Comment.
+     * @param subName
+     * @param subDate
+     * @param subCharge
+     * @param subComment
+     */
+
     public Subscriptions(String subName, String subDate, String subCharge, String subComment) {
         this.subName = subName;
         this.subDate = subDate;
@@ -19,45 +30,42 @@ public class Subscriptions implements Serializable {
         this.subComment = subComment;
     }
 
+    /**
+     * This function returns the subscription's name.
+     * @return subName
+     */
     public String getSubName() {
         return subName;
     }
 
-    public void setSubName(String subName) {
-        this.subName = subName;
-    }
+
+    /**
+     * This function returns a subscription's date.
+     * @return subDate
+     */
 
     public String getSubDate() {
         return subDate;
     }
 
-    public void setSubDate(String subDate) {
-        this.subDate = subDate;
-    }
+
+    /**
+     * This function returns a subscription's charge.
+     * @return subCharge
+     */
 
     public String getSubCharge() {
         return subCharge;
     }
 
-    public void setSubCharge(String subCharge) {
-        this.subCharge = subCharge;
-    }
 
+    /**
+     * This function returns a subscription's comment.
+     * @return
+     */
     public String getSubComment() {
         return subComment;
     }
 
-    public void setSubComment(String subComment) {
-        this.subComment = subComment;
-    }
 
-    @Override
-    public String toString() {
-        return "Subscriptions{" +
-                "subName='" + subName + '\'' +
-                ", subDate='" + subDate + '\'' +
-                ", subCharge='" + subCharge + '\'' +
-                ", subComment='" + subComment + '\'' +
-                '}';
-    }
 }

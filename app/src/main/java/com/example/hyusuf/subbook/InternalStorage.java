@@ -2,11 +2,8 @@ package com.example.hyusuf.subbook;
 
 import android.content.Context;
 import android.util.Log;
-
-import com.example.hyusuf.subbook.Subscriptions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -23,19 +20,32 @@ import static android.content.ContentValues.TAG;
 
 /**
  * Created by hyusuf on 2018-02-01.
+ *
+ * This class deals with all subscription storage
+ *
+ *
  */
 
 public class InternalStorage {
-    //loads the current contents of the file
+
     private Context context;
     private static String file;
 
+    /**
+     * This function makes an instance of internalStorage given context and filename
+     * @param con
+     * @param fileName
+     */
 
     public InternalStorage(Context con,String fileName) {
         this.context=con;
         this.file=fileName;
     }
 
+    /**
+     * This function returns an ArrayList of subscription objects saved from file
+     * @return ArrayList<Subscriptions>
+     */
     public ArrayList<Subscriptions> load_Subs() {
         //Subscriptions sub = null;
         File sub_File = new File(context.getFilesDir(), "" + File.separator + file);
@@ -51,14 +61,14 @@ public class InternalStorage {
         } catch (FileNotFoundException e) {
             subList = new ArrayList<Subscriptions>();
 
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            throw new RuntimeException();
         }
-
         return subList;
     }
 
+    /**
+     * This function saves an arrayList of subscription objects on to file
+     * @param subList
+     */
     public void save_Sub(ArrayList<Subscriptions> subList) {
         File sub_file=new File(context.getFilesDir(),""+File.separator+file);
         try {
@@ -76,17 +86,30 @@ public class InternalStorage {
 
 
     }
-    public void edit_Sub(Subscriptions sub,Subscriptions editsub){
+
+    /**
+     * This function is responsible for editing a subscription saved on file. Loads the data from file and and finds the position
+     * of the old subscription info and updates it with new info
+     * @param editSub
+     * @param sub
+     */
+    public void edit_Sub(Subscriptions editSub,Subscriptions sub){
         ArrayList<Subscriptions> subArray=new ArrayList<Subscriptions>();
         Subscriptions sub1;
         subArray=load_Subs();
         for(int i=0;i<subArray.size();i++){
             if(equalTo(sub1=subArray.get(i),sub)){
-                subArray.set(i,editsub);
+                subArray.set(i,editSub);
             }
         }
         save_Sub(subArray);
     }
+
+    /**
+     * This function given a subscription object deletes it from the file. It loads the array from file
+     * and removes the subscription from it.
+     * @param sub
+     */
     public void delete_Sub(Subscriptions sub){
         ArrayList<Subscriptions> subscriptionsArrayList=new ArrayList<Subscriptions>();
         subscriptionsArrayList=load_Subs();
@@ -103,6 +126,13 @@ public class InternalStorage {
         }
         save_Sub(subscriptionsArrayList);
     }
+
+    /**
+     * This function given two subscription objects returns true if their content are the same and false otherwise
+     * @param sub1
+     * @param sub2
+     * @return Boolean
+     */
 
     public boolean equalTo(Subscriptions sub1,Subscriptions sub2){
         return (sub1.getSubName().equals(sub2.getSubName())&& sub1.getSubDate().equals(sub2.getSubDate())&& sub1.getSubCharge().equals(sub2.getSubCharge())
